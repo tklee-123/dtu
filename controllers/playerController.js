@@ -19,6 +19,37 @@ const playerController = {
             res.status(500).json(error);
         }
     },
+    updatePlayer: async (req, res) => {
+        try {
+            const playerId = req.params.id;
+            const updatedInfo = req.body;
+            const player = await Player.findByIdAndUpdate(playerId, updatedInfo, { new: true });
+
+            if (!player) {
+                return res.status(404).json({ error: 'Player not found' });
+            }
+
+            res.status(200).json(player);
+        } catch (error) {
+            console.error('Error updating player information:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
+
+    deletePlayer: async (req, res) => {
+        try {
+            const playerId = req.params.id;
+            const player = await Player.findByIdAndRemove(playerId);
+            if (!player) {
+                return res.status(404).json({ error: 'Player not found' });
+            }
+
+            res.status(200).json({ message: 'Player deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting player:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
     createAccount: async (req, res) => {
         try {
             const email = req.body.email;

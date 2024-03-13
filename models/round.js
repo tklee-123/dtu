@@ -5,6 +5,7 @@ mongoose.connect('mongodb://0.0.0.0:27017/dtu_project', {
     useUnifiedTopology: true,
 });
 const roundSchema = new mongoose.Schema({
+    id: {type: String},
     player: {
         type: String,
         ref: Player

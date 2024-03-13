@@ -3,7 +3,7 @@ mongoose.connect('mongodb://0.0.0.0:27017/dtu_project', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
-const playerSchema = new mongoose.Schema({
+const evaluatorSchema = new mongoose.Schema({
     id: {type: String},
     field: {
         type: String,
@@ -13,7 +13,6 @@ const playerSchema = new mongoose.Schema({
         type: Number,
         require: true
     },
-    occupation: {type: String},
     full_name: {
         type: String,
         require: true
@@ -29,12 +28,8 @@ const playerSchema = new mongoose.Schema({
         password: {
             type: String
         }
-    },
-    level: {type: String},
-    current_assessment_score: {type: Number},
-    total_correct_answer: {type: Number},
-    played_round_count: {type: Number}
+    }
 })
 
-const Player = mongoose.model("Player", playerSchema)
-module.exports = Player
+const Evaluator = mongoose.model("Evaluator", evaluatorSchema)
+module.exports = Evaluator
