@@ -1,44 +1,22 @@
 const Player = require("./player")
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://0.0.0.0:27017/dtu_project', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+const Question = require("./question")
+const mongoose = require('../connect/connect');
 const roundSchema = new mongoose.Schema({
-    id: {type: String},
     player: {
-        type: String,
+        type: Object, // id của người chơi
         ref: Player
     },
-    start_time: {type: String},
-    questions: [
+    start_time: {type: String}, // thời gian bắt đầu lượt chơi
+    questions: [ // các câu hỏi đã được đưa ra trong lượt chơi đó, mỗi round có 10 câu hỏi
         {
-            knowledge_area: {type: String},
-            content: {type: String},
-            correct_answer: {type: String},
-            difficulty_level: {type: Number}
+            _id: {
+                type: Object,
+                ref: Question
+            }
         }
     ],
-    end_time: {type: String},
-    correctly_answered_questions: [
-        {
-            knowledge_area: {type: String},
-            content: {type: String},
-            correct_answer: {type: String},
-            difficulty_level: {type: Number},
-            time_for_answer: {type: Number}
-        }
-    ],
-    incorrectly_answered_questions: [
-        {
-            knowledge_area: {type: String},
-            content: {type: String},
-            correct_answer: {type: String},
-            difficulty_level: {type: Number},
-            time_for_answer: {type: Number}
-        }
-    ],
-    correct_ratio: {type: Number}
+    end_time: {type: String}, // thời gian kết thúc lượt chơi
+    correct_ratio: {type: Number} // tỷ lệ trả lời đúng
 })
 
 const Round = mongoose.model("Round", roundSchema)

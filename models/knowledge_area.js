@@ -1,11 +1,5 @@
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://0.0.0.0:27017/dtu_project', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+const mongoose = require('../connect/connect');
 const knowledge_areaSchema = new mongoose.Schema({
-    
-    id: {type: String},
     field: {type: String},
     area: {type: String}
 })

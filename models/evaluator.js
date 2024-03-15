@@ -1,34 +1,22 @@
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://0.0.0.0:27017/dtu_project', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+const mongoose = require('../connect/connect');
 const evaluatorSchema = new mongoose.Schema({
-    id: {type: String},
     field: {
         type: String,
         require: true
-    },
+    }, //lĩnh vực chuyên môn của người đánh giá
     birth_year: {
         type: Number,
         require: true
-    },
+    }, // năm sinh
     full_name: {
         type: String,
         require: true
 
-    },
+    }, // họ tên
     email: {
         type: String,
         require: true,
-        unique: true
-    },
-    account: {
-        username: {type: String},
-        password: {
-            type: String
-        }
-    }
+    } //email
 })
 
 const Evaluator = mongoose.model("Evaluator", evaluatorSchema)

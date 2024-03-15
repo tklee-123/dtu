@@ -1,18 +1,17 @@
 const Question = require("./question")
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://0.0.0.0:27017/dtu_project', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+const Evaluator = require("./evaluator")
+const mongoose = require('../connect/connect');
 const question_evaluationSchema = new mongoose.Schema({
-    id: {type: String},
-    timestamp: {type: Date},
-    question: {
-        type: String,
+    timestamp: {type: Date}, // thời gian khi người đánh giá bắt đầu chọn câu hỏi để đánh giá
+    question: { 
+        type: Object, // id của câu hỏi
         ref: Question
     },
-    level: {type: String}
-
+    evaluator: {
+        type: Object, 
+        ref: Evaluator
+    },
+    level: {type: String} // người đánh giá xếp câu hỏi vào cấp độ mấy
 })
 const QuestionEvaluation = mongoose.model("QuestionEvaluation", question_evaluationSchema)
 module.exports = QuestionEvaluation
