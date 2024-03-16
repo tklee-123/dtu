@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const uri = 'mongodb://0.0.0.0:27017/dtu'; // Thay đổi địa chỉ IP nếu cần
+const uri = 'mongodb://localhost:27017/dtu'; // Thay đổi địa chỉ IP nếu cần
 
 mongoose.connect(uri, {
     useNewUrlParser: true,

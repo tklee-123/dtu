@@ -26,7 +26,7 @@ const getPlayerInfo = async (playerId) => {
     }
 };
 
-const NUM_REQUESTS = 20000; 
+const NUM_REQUESTS = 100000; 
 const playerId = '65f48b514a1e2489c5d4ec49'; 
 
 const processRequest = async () => {

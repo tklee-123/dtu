@@ -5,7 +5,7 @@ const accountSchema = mongoose.Schema({
     username: {type: String}, //tên tài khoản
     password: {
         type: String,
-        ref: Password
+        ref: Password // tham chiếu đến 1 đối tượng trong collection Password
     }, 
     role: {type: String} // vai trò, là người chơi hay người đánh giá
 })
