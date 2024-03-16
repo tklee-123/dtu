@@ -1,24 +1,36 @@
-const Player = require("../models/player")
+const Player = require("../models/player");
+const Account = require("../models/account");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 const playerController = {
-    register: async(req, res) => {
+    register: async (req, res) => {
         try {
+            const { field, birth_year, occupation, full_name, email } = req.body;
+    
+            // Create the player with personal information
             const newUser = new Player({
-                field: req.body.field,
-                birthyear: req.body.birthyear,
-                occupation: req.body.occupation,
-                full_name: req.body.full_name,
-                email: req.body.email
-            })
-            const user = await newUser.save()
-            console.log("Player's information saved to the database:", user);
-            res.status(200).json(user);
+                field,
+                birth_year,
+                occupation,
+                full_name,
+                email,
+                level: 0,
+                current_assessment_score: 0,
+                correct_ratio: 0,
+                played_round_count: 0
+            });
+            const savedUser = await newUser.save();
+    
+            console.log("Player's information saved to the database:", savedUser);
+            res.status(200).json(savedUser);
         } catch (error) {
             console.error("Error during user registration:", error);
-            res.status(500).json(error);
+            res.status(500).json({ error: 'Internal Server Error' });
         }
     },
+    
+
     updatePlayer: async (req, res) => {
         try {
             const playerId = req.params.id;
@@ -44,34 +56,35 @@ const playerController = {
                 return res.status(404).json({ error: 'Player not found' });
             }
 
-            res.status(200).json({ message: 'Player deleted successfully' });
+            // Also delete the associated account
+            await Account.findByIdAndRemove(player.accountId);
+
+            res.status(200).json({ message: 'Player and associated account deleted successfully' });
         } catch (error) {
             console.error('Error deleting player:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },
+
     createAccount: async (req, res) => {
         try {
-            const email = req.body.email;
-            const player = await Player.findOne({ email });
-    
-            if (!player) {
-                return res.status(404).json({ error: 'Player not found' });
-            }
-            player.account = {
-                username: req.body.username,
-                password: req.body.password
-            };
-    
-            await player.save();
-    
-            res.status(200).json(player);
+            const { username, password } = req.body;
+
+            // Create the account
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const newAccount = new Account({
+                username,
+                password: hashedPassword,
+                role: 'player'
+            });
+            const savedAccount = await newAccount.save();
+
+            res.status(200).json(savedAccount);
         } catch (error) {
             console.error('Error creating account:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     }
-    
 };
 
 module.exports = playerController;

@@ -50,27 +50,27 @@ const generateFakeQuestion = () => ({
 });
 
 // Hàm sinh dữ liệu vòng chơi giả mạo
-const generateFakeRound = (playerIds, questionIds) => ({
+const generateFakeRound = (playerIds) => ({
     player: faker.random.arrayElement(playerIds),
     start_time: faker.date.past(),
     end_time: faker.date.recent(),
-    correct_ratio: faker.datatype.number({ min: 0, max: 1 }),
-    questions: questionIds.map(questionId => ({
-        question: questionId,
-        answer: faker.datatype.boolean() // Giả lập câu trả lời cho mỗi câu hỏi
-    }))
+    correct_ratio: faker.datatype.number({ min: 0, max: 1 })
 });
+
 
 
 // Hàm sinh dữ liệu câu trả lời đã được trả giả mạo
 const generateFakeAnsweredQuestion = (playerIds, questionIds) => {
-    const playerId = faker.random.arrayElement(playerIds);
-    const questions = questionIds.map(questionId => ({
-        _id: questionId,
-        timestamp: faker.date.recent(),
-        status: faker.datatype.number({ min: 0, max: 1 }),
-        time_for_answer: faker.datatype.number({ min: 1, max: 60 })
-    }));
+    const playerId = new mongoose.Types.ObjectId();
+    const questions = Array.from({ length: 100 }, () => {
+        const questionId = new mongoose.Types.ObjectId();
+        return {
+            _id: questionId,
+            timestamp: faker.date.recent(),
+            status: faker.datatype.number({ min: 0, max: 1 }),
+            time_for_answer: faker.datatype.number({ min: 1, max: 60 })
+        };
+    });
 
     return {
         playerId: playerId,
