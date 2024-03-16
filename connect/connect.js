@@ -4,7 +4,7 @@ const uri = 'mongodb://0.0.0.0:27017/dtu'; // Thay đổi địa chỉ IP nếu 
 
 mongoose.connect(uri, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useUnifiedTopology: true
 });
 
 mongoose.connection.on('connected', () => {
