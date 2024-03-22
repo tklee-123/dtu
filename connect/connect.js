@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 
-const uri = 'mongodb+srv://root:Vly.19952003@cluster0.jmil5cr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Thay đổi địa chỉ IP nếu cần
+const uri = 'mongodb://0.0.0.0:27017/dtu2'; 
 
 mongoose.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
-
 mongoose.connection.on('connected', () => {
     console.log('Connected to MongoDB');
 });

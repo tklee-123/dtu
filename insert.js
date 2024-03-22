@@ -1,7 +1,7 @@
 const mongoose = require('./connect/connect');
 const async = require('async');
 const faker = require('faker');
-
+const fs = require('fs');
 // Models
 const Account = require('./models/account');
 const AnsweredQuestion = require('./models/answered_question');
@@ -12,8 +12,7 @@ const Password = require('./models/password');
 const Player = require('./models/player');
 const Question = require('./models/question');
 const QuestionEvaluation = require('./models/question_evaluation');
-const Round = require('./models/round');
-
+const Round = require("./models/round")
 // Kết nối đến MongoDB
 mongoose.connection.on('connected', () => {
     console.log('Connected to MongoDB');
@@ -35,56 +34,55 @@ const generateFakePlayer = () => ({
     correct_ratio: faker.datatype.number({ min: 0, max: 1 }),
     played_round_count: faker.datatype.number({ min: 0, max: 50 })
 });
-
-// Hàm sinh dữ liệu câu hỏi giả mạo
-const generateFakeQuestion = () => ({
-    knowledge_area: {
-        field: faker.random.word(),
-        area: faker.random.word()
-    },
-    content: faker.lorem.sentence(),
-    answers: Array.from({ length: 4 }, () => faker.lorem.word()),
-    correct_answer: faker.random.word(),
-    difficulty_level: faker.datatype.number({ min: 1, max: 5 }),
-    language: faker.datatype.number({ min: 1, max: 2 })
-});
-
-// Hàm sinh dữ liệu vòng chơi giả mạo
-const generateFakeRound = (playerIds) => ({
+const generateFakeRound = (playerIds, questionIds) => ({
     player: faker.random.arrayElement(playerIds),
     start_time: faker.date.past(),
     end_time: faker.date.recent(),
-    correct_ratio: faker.datatype.number({ min: 0, max: 1 })
+    correct_ratio: faker.datatype.number({ min: 0, max: 1 }),
+    questions: Array.from({ length: 100 }, () => faker.random.arrayElement(questionIds))
 });
 
 
-
-// Hàm sinh dữ liệu câu trả lời đã được trả giả mạo
-const generateFakeAnsweredQuestion = (playerIds, questionIds) => {
-    const playerId = new mongoose.Types.ObjectId();
-    const questions = Array.from({ length: 100 }, () => {
-        const questionId = new mongoose.Types.ObjectId();
-        return {
-            _id: questionId,
-            timestamp: faker.date.recent(),
-            status: faker.datatype.number({ min: 0, max: 1 }),
-            time_for_answer: faker.datatype.number({ min: 1, max: 60 })
-        };
-    });
+const generateFakeQuestion = () => {
+    const imageBuffer = fs.readFileSync('D:/emotion-based-filter/data/test/angry/im0.png');
+    const imageBinary = imageBuffer.toString('base64');
 
     return {
-        playerId: playerId,
-        questions: questions
+        knowledge_area: {
+            field: faker.random.word(),
+            area: faker.random.word()
+        },
+        content: faker.lorem.sentence(),
+        answers: Array.from({ length: 4 }, () => faker.lorem.word()),
+        correct_answer: faker.random.word(),
+        difficulty_level: faker.datatype.number({ min: 1, max: 5 }),
+        language: faker.datatype.number({ min: 1, max: 2 }),
+        image: imageBinary
     };
 };
 
 
+
+
+// Hàm sinh dữ liệu câu trả lời đã được trả giả mạo
+const generateFakeAnsweredQuestion = (playerIds, questionIds) => ({
+    playerId: faker.random.arrayElement(playerIds),
+    questions: Array.from({ length: 10 }, () => ({
+        questionId: faker.random.arrayElement(questionIds),
+        status: faker.random.arrayElement([0, 1]), 
+        timestamp: faker.date.recent(),
+        time_for_answer: faker.datatype.number()
+    }))
+});
+
+
+
 // Hàm sinh dữ liệu đánh giá câu hỏi giả mạo
-const generateFakeQuestionEvaluation = (playerIds, questionIds) => ({
-    player: faker.random.arrayElement(playerIds),
+const generateFakeQuestionEvaluation = (questionIds, evaluatorIds) => ({
+    evaluator: faker.random.arrayElement(evaluatorIds),
     question: faker.random.arrayElement(questionIds),
     timestamp: faker.date.recent(),
-    level: faker.random.word()
+    level: faker.datatype.number({min: 0, max: 10})
 });
 
 // Hàm sinh dữ liệu người đánh giá giả mạo
@@ -147,22 +145,22 @@ const insertDataFast = async (data, model) => {
 
 // Hàm chèn dữ liệu vào tất cả các bảng
 const insertAllData = async () => {
-    // Tạo dữ liệu giả mạo
-    const playerIds = Array.from({ length: 20000 }, () => new mongoose.Types.ObjectId());
-    const evaluatorIds = Array.from({ length: 20000 }, () => new mongoose.Types.ObjectId());
-    const questionIds = Array.from({ length: 20000 }, () => new mongoose.Types.ObjectId());
+    // Tạo dữ liệu giả mạo với số lượng nhỏ hơn
+    const playerIds = Array.from({ length: 100 }, () => new mongoose.Types.ObjectId());
+    const evaluatorIds = Array.from({ length: 100 }, () => new mongoose.Types.ObjectId());
+    const questionIds = Array.from({ length: 100 }, () => new mongoose.Types.ObjectId());
 
     const fakeData = {
-        accounts: Array.from({ length: 20000 }, generateFakeAccount),
-        answeredQuestions: Array.from({ length: 20000 }, () => generateFakeAnsweredQuestion(playerIds, questionIds)),
-        evaluators: Array.from({ length: 20000 }, generateFakeEvaluator),
-        groupQuestions: Array.from({ length: 20000 }, generateFakeGroupQuestion),
-        knowledgeAreas: Array.from({ length: 20000 }, generateFakeKnowledgeArea),
-        passwords: Array.from({ length: 20000 }, generateFakePassword),
-        players: Array.from({ length: 20000 }, generateFakePlayer),
-        questions: Array.from({ length: 20000 }, generateFakeQuestion),
-        questionEvaluations: Array.from({ length: 20000 }, () => generateFakeQuestionEvaluation(playerIds, questionIds)),
-        rounds: Array.from({ length: 20000 }, () => generateFakeRound(playerIds))
+        accounts: Array.from({ length: 100 }, generateFakeAccount),
+        answeredQuestions: Array.from({ length: 100 }, () => generateFakeAnsweredQuestion(playerIds, questionIds)),
+        evaluators: Array.from({ length: 100 }, generateFakeEvaluator),
+        groupQuestions: Array.from({ length: 100 }, generateFakeGroupQuestion),
+        knowledgeAreas: Array.from({ length: 100 }, generateFakeKnowledgeArea),
+        passwords: Array.from({ length: 100 }, generateFakePassword),
+        players: Array.from({ length: 100 }, generateFakePlayer),
+        questions: Array.from({ length: 100 }, generateFakeQuestion),
+        questionEvaluations: Array.from({ length: 100 }, () => generateFakeQuestionEvaluation(evaluatorIds, questionIds)),
+        rounds: Array.from({length: 100}, () => generateFakeRound(playerIds,questionIds))
     };
 
     // Thực hiện việc chèn dữ liệu

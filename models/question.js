@@ -15,7 +15,8 @@ const questionSchema = new mongoose.Schema({
     difficulty_level: {
         type: Number // độ khó dễ
     },
-    language: {type: Number} // ngôn ngữ 
+    language: {type: Number}, // ngôn ngữ 
+    image: {type: String}
 })
 
 const Question = mongoose.model("Question", questionSchema)
