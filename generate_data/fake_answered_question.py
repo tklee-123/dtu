@@ -9,8 +9,8 @@ db = client['dtu']  # Choose your database
 answered_question_collection = db['answered_questions']  # Collection AnsweredQuestion
 question_collection = db['questions']  # Collection Question
 player_collection = db['players']
-category = ['Math', 'Physics', 'Literature', 'Geo', 'His', 'Eng']
-difficulty = [1,2,3,4,5,6,7,8,9,10]
+category = ['Math', 'Physics', 'Literature', 'Geography', 'History', 'Biology', 'Science']
+difficulty = [1,2,3,4,5]
 
 # Get data of questions and players from MongoDB
 selected_questions = list(question_collection.find({}, {"_id": 1}))
@@ -19,11 +19,11 @@ selected_players = list(player_collection.find({}, {"_id": 1}))
 # Function to generate fake data
 def generate_fake_data():
     fake_data = []
-    for _ in range(1000000):  
+    for _ in range(100000):  
         questions_data = []
-        for _ in range(10):  # Generate 10 answered questions per player
+        for _ in range(100):  # Generate 10 answered questions per player
             question_data = {
-                "_id": ObjectId(),  # Generate a new ObjectId for each question
+                "_id": random.choice(selected_questions)['_id'],  # Generate a new ObjectId for each question
                 "timestamp": datetime.datetime.now(),  # Use the current timestamp
                 "status": random.choice([0, 1]),  # Randomly set status to 0 or 1
                 "timeForAnswer": random.randint(10, 39),  # Random time between 10 to 39 seconds
@@ -37,7 +37,6 @@ def generate_fake_data():
             "questions": questions_data
         }
         fake_data.append(fake_group_question)
-        print(len(fake_data))
     return fake_data
 
 # Function to insert fake data into MongoDB
