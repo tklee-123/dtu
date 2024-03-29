@@ -1,40 +1,42 @@
 from pymongo import MongoClient
+from faker import Faker
 import random
 
-# Kết nối đến MongoDB
+# Connect to MongoDB
 client = MongoClient('mongodb://localhost:27017/')
-db = client['dtu']  
-group_question_collection = db['group_questions']  
-player_collection = db['players']  # Collection chứa thông tin về người chơi
-question_collection = db['questions']  # Collection chứa thông tin về câu hỏi
-
+db = client['dtu']
+group_question_collection = db['group_questions']
+player_collection = db['players']  
+question_collection = db['questions'] 
 levels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-selected_questions = list(question_collection.find({}, {"_id": 1}))
-majors = ['Math', 'Physics', 'Literature', 'Geo', 'His', 'Eng']
+categories = question_collection.distinct("category")
 
-# Hàm tạo dữ liệu giả mạo cho schema groupQuestionSchema
 def generate_fake_data():
     fake_data = []
-    for _ in range(1000000):  
-        questions_data = []
-        for _ in range(random.randint(1, 10)): 
-            random_question = random.choice(selected_questions)
-            question_data = {
-                "_id": random_question['_id'],
-                "difficulty": random.choice(levels)
-            }
-            questions_data.append(question_data)
-        
+    
+    category_questions = {}
+    for category in categories:
+        pipeline = [
+            {"$match": {"category": category}},
+            {"$project": {"_id": 1, "difficulty": 1}},
+            {"$limit": 900}
+        ]
+        selected_questions = list(question_collection.aggregate(pipeline))
+        category_questions[category] = selected_questions
+    
+    for _ in range(1000000):
+        player_major = random.choice(categories)
+        selected_questions = category_questions[player_major]
         fake_group_question = {
-            "player_major": random.choice(majors),
+            "player_major": player_major,
             "player_level": random.choice(levels),
-            "questions": questions_data
+            "questions": selected_questions
         }
         fake_data.append(fake_group_question)
-        print(len(fake_data))
+
     return fake_data
 
-# Hàm thêm dữ liệu giả mạo vào schema groupQuestionSchema
+
 def insert_fake_data():
     try:
         fake_data = generate_fake_data()
@@ -43,5 +45,5 @@ def insert_fake_data():
     except Exception as e:
         print("Error inserting data:", e)
 
-# Gọi hàm để thêm dữ liệu giả mạo
+
 insert_fake_data()

@@ -1,17 +1,21 @@
-import os
-import base64
+from bson import ObjectId
 import faker
 import random
 from pymongo import MongoClient
-
+from pymongo import MongoClient
+from gridfs import GridFS
 # Connect to MongoDB
 client = MongoClient('mongodb://localhost:27017')
 db = client['dtu']  # Choose your database
 question_collection = db['questions']  # Choose your collection
 
+fs = GridFS(db)
 # Initialize Faker
 fake = faker.Faker()
 
+# Lưu trữ tệp video vào GridFS
+with open('D:/dtu/gridfs/video2.mp4', 'rb') as video_file:
+    video_id = fs.put(video_file, filename='video.mp4')
 categories = {
     'Math': ['Algebra', 'Math'],
     'Literature': ['Poetry', 'Drama', 'Prose', 'Literary Theory'],
@@ -36,7 +40,7 @@ def generate_fake_question_data():
             "correct_answer": fake.word(),
             "difficulty": random.randint(1,5),  # Set difficulty level
             "language": random.randint(1, 2),
-            "image": "iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAAAAAByaaZbAAAIVklEQVR4nC2P+3NU9R1AP9/HvXfvPpPsJlnygBASIAkQIJqgQQaJVAPlYSlvtGhFHShIx9pWq1gaEGGmUIsWxo6VdABrQ6VAUKBEIQTEBwQkCTEGsslm2WyS3exmX3fv4/vtD/gHnDnnIAYAoIn1z87S0iXOSeK63fBWOrGhS5gDF7wRS4oyzaK4E1BwLlxPAQCAQycMWwP5YBqOvV4QOev1O/vcg+MQ44JnQq4S4BanLzAmGkbwPQUA4IJ22WEPAZBIdMlTQ0JN3NM0e23d9SKiqhNHnO3l0YjF5aMUyyPKfYAMKiDfU0tDnS8+04+0qFRYxtRX97SMs3LVIAHVZ+fJTLtMxg90YgAAAEXlWRUPoIGNG0IUY9FQgqE4/v2UdsRs6QndiEj9YXcgMpKCLAwAwKCrXx7KyPFO2xDCGHOOqSiICn97bo9ZyBtyWO3D36p9gwG/Dnk/GmKKMGJopFjnmHGEgDHEaMJaY1XuelyVt7OT86WISRYB4j8a4iku+sB9NsZSHHHO75/pxPRdtVka/sFcl2XYuS9u4oUYADiBFuTSkrhvxOZ2CwwjQAAIoVRJ37QXbZG5DW8VtVp+yNHDPTyDAgCn0R6TGBfvSH+78Kltg0PFiCGGOdZdS2rOfLthrVn8krv6GM32gRsDAIfAgGCwnO7880pZOWYIACMMCHFl3dSB3/0CItGY4agwZbsJTKMAnIYPtLs5CJMeeCSPGIoBAAwDAOcghDebDCSR8a7+nFSeWcmRMXCc2Pqew08m61O2OLu6dZEBY4hTzLHFKohSSk1EkoVviLfbw8AkTgEZu/9dN/Xkaacns2N7572VvxUQ4ZT7TRb9dmQ4qbQlcNeUZY/MOOkciqWKKDJwf+WkWcLaJ9LNhAXYmMHKeQUixIS/rpzb+LxI7PaYZ"
+            "multimedia": video_id
         }
         fake_questions.append(fake_question)
     return fake_questions

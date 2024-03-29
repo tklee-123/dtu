@@ -10,31 +10,29 @@ answered_question_collection = db['answered_questions']  # Collection AnsweredQu
 question_collection = db['questions']  # Collection Question
 player_collection = db['players']
 category = ['Math', 'Physics', 'Literature', 'Geography', 'History', 'Biology', 'Science']
-difficulty = [1,2,3,4,5]
+difficulty = [1, 2, 3, 4, 5]
 
 # Get data of questions and players from MongoDB
-selected_questions = list(question_collection.find({}, {"_id": 1}))
+selected_questions = list(question_collection.find({}, {"_id": 1, "difficulty": 1}))
 selected_players = list(player_collection.find({}, {"_id": 1}))
 
 # Function to generate fake data
 def generate_fake_data():
     fake_data = []
-    for _ in range(100000):  
-        questions_data = []
-        for _ in range(100):  # Generate 10 answered questions per player
-            question_data = {
-                "_id": random.choice(selected_questions)['_id'],  # Generate a new ObjectId for each question
-                "timestamp": datetime.datetime.now(),  # Use the current timestamp
-                "status": random.choice([0, 1]),  # Randomly set status to 0 or 1
-                "timeForAnswer": random.randint(10, 39),  # Random time between 10 to 39 seconds
-                "difficulty": random.choice(difficulty)  # Random difficulty level between 1 to 10
-            }
-            questions_data.append(question_data)
-        
+    # Pre-generate sets of 100 questions
+    question_sets = [random.sample(selected_questions, 100) for _ in range(10000)]
+    for question_set in question_sets:
+        for question in question_set:
+            question["timestamp"] = datetime.datetime.now()
+            question["status"] = random.choice([0, 1])
+            question['timeForAnswer'] = random.randint(10, 39)
+
+    for _ in range(100000):
+        question_set = random.choice(question_sets)
         player_id = random.choice(selected_players)['_id']
         fake_group_question = {
             "playerId": player_id,
-            "questions": questions_data
+            "questions": question_set
         }
         fake_data.append(fake_group_question)
     return fake_data

@@ -30,7 +30,6 @@ const playerController = {
         }
     },
     
-
     updatePlayer: async (req, res) => {
         try {
             const playerId = req.params.id;

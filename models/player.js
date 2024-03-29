@@ -1,9 +1,9 @@
 const mongoose = require('../connect/connect');
 const playerSchema = new mongoose.Schema({
-    field: { // lĩnh vực người chơi chọn để chơi (chọn lĩnh vực nào thì sẽ được đưa ra câu hỏi thuộc lĩnh vực đó)
+    major: [{ // lĩnh vực người chơi chọn để chơi (chọn lĩnh vực nào thì sẽ được đưa ra câu hỏi thuộc lĩnh vực đó)
         type: String,
         require: true
-    }, //đánh index chung cho 3 cái field, birth_year, occupation và level
+    }], //đánh index chung cho 3 cái field, birth_year, occupation và level
     birth_year: {
         type: Number,
         require: true

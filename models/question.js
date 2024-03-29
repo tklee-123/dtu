@@ -1,9 +1,7 @@
 const mongoose = require('../connect/connect');
 const questionSchema = new mongoose.Schema({
-    knowledge_area: { // câu hỏi thuộc khối kiến thức nào
-        field: {type: String}, // tên lĩnh vực
-        area: {type: String} // tên khối kiến thức
-    },
+    category: {type: String},
+    subcategory: {type: String},
     content: {
         type: String, // nội dung câu hỏi
         required: true
@@ -16,8 +14,8 @@ const questionSchema = new mongoose.Schema({
         type: Number // độ khó dễ
     },
     language: {type: Number}, // ngôn ngữ 
-    image: {type: String}
+    multimedia: {type: String}
 })
-
+questionSchema.index({ 'category': 1, 'difficulty': 1});
 const Question = mongoose.model("Question", questionSchema)
 module.exports = Question

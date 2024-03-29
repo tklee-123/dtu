@@ -4,8 +4,7 @@ const accountSchema = mongoose.Schema({
     id: {type: Object}, // là id của người chơi hoặc người đánh giá
     username: {type: String}, //tên tài khoản
     password: {
-        type: String,
-        ref: Password // tham chiếu đến 1 đối tượng trong collection Password
+        type: String
     }, 
     role: {type: String} // vai trò, là người chơi hay người đánh giá
 })
