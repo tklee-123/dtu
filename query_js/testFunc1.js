@@ -2,7 +2,7 @@ const mongoose = require("../connect/connect");
 const PlayerModel = require("../models/player")
 const QuestionModel = require("../models/question")
 const AnsweredQuestionModel = require("../models/answered_question")
-const GroupQuestionModel = require("../models/group_question"); // Import model for group_question
+const GroupQuestionModel = require("../models/group_question"); 
 const FunctionModel = require("../models/function")
 
 
@@ -34,6 +34,7 @@ async function useFunction() {
     } catch (error) {
         console.error('Error using function:', error);
     } finally {
+        console.log("Data added")
         mongoose.disconnect();
     }
 }

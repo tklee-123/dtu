@@ -3,7 +3,7 @@
 1.Clone code về
 2.Trong terminal, run lệnh npm install
 3.Chạy các file trong folder generate_data 
-Chạy theo thứ tự: question -> player/evaluator -> accounts/groupquestion/answeredquestion -> history
+Chạy theo thứ tự: question -> player/evaluator -> accounts/groupquestion/ansgitweredquestion -> history
 lệnh run trên terminal: node <tên file> (hoặc ấn luôn nút run trong vscode)
 #Lưu các hàm vào MongoDB và test cơ sở dữ liệu
 1. Chạy các file trong folder functions

@@ -9,6 +9,6 @@ const groupQuestionSchema = new mongoose.Schema({
         }
     ]
 })
-groupQuestionSchema.index({ 'player_major': 1, 'player_level': 1, 'level': 1 });
+groupQuestionSchema.index({ 'player_major': 1, 'player_level': 1 });
 const GroupQuestion = mongoose.model("Group_Question", groupQuestionSchema)
 module.exports = GroupQuestion

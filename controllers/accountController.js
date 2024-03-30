@@ -2,7 +2,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Account = require("../models/account");
 const crypto = require('crypto')
-const Player = require("../models/player")
+const Player = require("../models/player");
+const { log } = require("console");
 const accountController = {
     registerUser: async (req, res) => {
         try {
@@ -40,6 +41,7 @@ const accountController = {
 
     // LOGIN USER
     loginUser: async (req, res) => {
+        console.log(req.body);
         try {
             // Tìm người dùng (user) bằng email
             const user = await Player.findOne({ email: req.body.email });

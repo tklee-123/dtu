@@ -24,6 +24,6 @@ const playerSchema = new mongoose.Schema({
     correct_ratio: {type: Number}, // tỉ lệ trả lời đúng
     played_round_count: {type: Number} // tổng số vòng chơi đã chơi
 })
-playerSchema.index({ 'field': 1, 'birth_year': 1, 'occupation': 1, 'level': 1 });
+playerSchema.index({ 'major': 1, 'level': 1, 'email': 1 });
 const Player = mongoose.model("Player", playerSchema)
 module.exports = Player

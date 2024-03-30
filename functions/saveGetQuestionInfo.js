@@ -4,14 +4,11 @@ const mongoose = require("../connect/connect");
 
 async function getQuestionInfo(questionId) {
     try {
-        // Truy vấn thông tin chi tiết của câu hỏi từ collection questions
         const question = await QuestionModel.findOne({ _id: questionId });
 
         if (!question) {
             throw new Error("Question not found");
         }
-
-        // Trả về thông tin chi tiết của câu hỏi
         return {
             content: question.content,
             answers: question.answers,
@@ -28,7 +25,7 @@ async function saveFunction() {
     try {
         const functionDoc = new FunctionModel({
             _id: 'getQuestionInfo',
-            value: getQuestionInfo.toString() // Change to getQuestionInfo
+            value: getQuestionInfo.toString() 
         });
         await functionDoc.save();
         console.log('Function "getQuestionInfo" saved successfully.');
@@ -38,6 +35,4 @@ async function saveFunction() {
         mongoose.disconnect();
     }
 }
-
-// Thực thi hàm saveFunction
 saveFunction();

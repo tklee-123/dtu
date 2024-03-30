@@ -6,15 +6,13 @@ const jwt = require("jsonwebtoken");
 const playerController = {
     register: async (req, res) => {
         try {
-            const { field, birth_year, occupation, full_name, email } = req.body;
     
-            // Create the player with personal information
             const newUser = new Player({
-                field,
-                birth_year,
-                occupation,
-                full_name,
-                email,
+                major: req.body.major,
+                birth_year: req.body.birth_year,
+                occupation: req.body.occupation,
+                full_name: req.body.full_name,
+                email: req.body.email,
                 level: 0,
                 current_assessment_score: 0,
                 correct_ratio: 0,
@@ -77,7 +75,7 @@ const playerController = {
                 role: 'player'
             });
             const savedAccount = await newAccount.save();
-
+            
             res.status(200).json(savedAccount);
         } catch (error) {
             console.error('Error creating account:', error);

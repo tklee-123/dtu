@@ -14,5 +14,5 @@ const answeredQuestionSchema = mongoose.Schema({
 
 // Đánh chung một index cho playerId và timestamp
 answeredQuestionSchema.index({ playerId: 1, timestamp: 1 });
-const AnsweredQuestion = mongoose.model("Answered_Question", answeredQuestionSchema);
+const AnsweredQuestion = mongoose.model("answered_question", answeredQuestionSchema);
 module.exports = AnsweredQuestion;
