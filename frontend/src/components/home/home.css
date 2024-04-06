@@ -1,0 +1,58 @@
+/* home.css */
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-image: url("D:/dtu/frontend/public/images/bg.png");
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.8); /* Màu trắng với độ mờ 80% */
+    padding: 20px;
+    border-radius: 10px;
+    height: 80vh; /* Thiết lập chiều cao để dùng cho trang trên màn hình */
+  }
+  
+  .welcome-text {
+    font-size: 32px;
+    font-weight: bold; /* Kiểu chữ dày */
+    margin-bottom: 20px;
+    color: #fff;
+    text-shadow: 2px 2px 4px #ff9d00; /* Hiệu ứng bóng */
+  }
+  
+  .button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .button-wrapper a {
+    display: inline-block;
+    text-decoration: none;
+    color: white;
+    background-color: #ff9d00;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .button-wrapper a:hover {
+    background-color: #b34200;
+  }
+  
+  /* Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .welcome-text {
+    animation: fadeIn 1s ease-out; /* Sử dụng animation fadeIn */
+  }
+  
