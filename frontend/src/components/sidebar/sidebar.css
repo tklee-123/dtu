@@ -1,0 +1,37 @@
+/* sidebar.css */
+.sidebar a{
+  color: white;
+}
+.sidebar {
+    height: 100%;
+    width: 200px; /* Điều chỉnh độ rộng của side bar tại đây */
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #ff9d00; /* Màu nền của side bar */
+    overflow-x: hidden;
+    padding-top: 20px;
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar ul li a {
+    text-decoration: none; /* Loại bỏ gạch chân */
+    color: white;
+    font-weight: bold; /* Đậm chữ */
+  }
+  
+  .sidebar li {
+    padding: 8px 8px;
+    text-decoration: none;
+    font-size: 16px; /* Kích thước chữ cho các mục trong side bar */
+    color: white; /* Màu chữ cho các mục trong side bar */
+  }
+  
+  .sidebar li:hover {
+    background-color: #555; /* Màu nền của các mục khi di chuột vào */
+  }
+  

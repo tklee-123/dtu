@@ -1,29 +1,29 @@
 const mongoose = require('../connect/connect');
 const playerSchema = new mongoose.Schema({
-    major: [{ // lĩnh vực người chơi chọn để chơi (chọn lĩnh vực nào thì sẽ được đưa ra câu hỏi thuộc lĩnh vực đó)
+    major: [{ 
         type: String,
         require: true
-    }], //đánh index chung cho 3 cái field, birth_year, occupation và level
+    }], 
     birth_year: {
         type: Number,
         require: true
-    }, // năm sinh
-    occupation: {type: String}, // nghề nghiệp
+    }, 
+    occupation: {type: String}, 
     full_name: {
         type: String,
         require: true
 
-    }, // họ tên
+    }, 
     email: {
         type: String,
         require: true
         
-    }, //email
-    level: {type: Number}, // cấp độ hiện tại
-    current_assessment_score: {type: Number}, // điểm tích lũy (cứ sau mỗi lượt chơi, hệ thống sẽ dựa vào kết quả để cho điểm người chơi)
-    correct_ratio: {type: Number}, // tỉ lệ trả lời đúng
-    played_round_count: {type: Number} // tổng số vòng chơi đã chơi
+    }, 
+    degree: {type: Number}, 
+    account: {
+        username: {type: String},
+        passwword: {type: String}
+    }
 })
-playerSchema.index({ 'major': 1, 'level': 1, 'email': 1 });
 const Player = mongoose.model("Player", playerSchema)
 module.exports = Player

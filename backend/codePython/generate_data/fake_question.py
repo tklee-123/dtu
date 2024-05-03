@@ -4,8 +4,10 @@ import random
 from pymongo import MongoClient
 from pymongo import MongoClient
 from gridfs import GridFS
+import os
 # Connect to MongoDB
-client = MongoClient('mongodb+srv://root:Vly.19952003@cluster0.jmil5cr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+# client = MongoClient('mongodb+srv://root:Vly.19952003@cluster0.jmil5cr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+client = MongoClient('mongodb://localhost:27017')
 db = client['dtu']  # Choose your database
 question_collection = db['questions']  # Choose your collection
 
@@ -25,8 +27,14 @@ categories = {
 
 fs = GridFS(db)
 # Lưu trữ tệp video vào GridFS
-with open('D:/dtu/backend/codePython/generate_data/video2.mp4', 'rb') as video_file:
-    video_id = fs.put(video_file, filename='video.mp4')
+path = 'D:/dtu/backend/codePython/generate_data/video'
+video_ids = []
+for file in os.listdir(path):
+    file_path = os.path.join(path, file) 
+    with open(file_path, 'rb') as video_file:
+        video_id = fs.put(video_file, filename=file)  
+        video_ids.append(video_id)
+    
 def generate_fake_question_data():
     fake_questions = []
     for _ in range(20000):
@@ -38,10 +46,8 @@ def generate_fake_question_data():
         lower_bound = max(1, difficulty - 1)
         upper_bound = min(10, difficulty + 1)
         required_rank = random.randint(lower_bound, upper_bound)
-        # Get the index of the category
-        category_index = list(categories.keys()).index(category)
         fake_question = {
-            "category": category_index,
+            "category": category,
             "subcategory": subcategory,
             "content": fake.sentence(),
             "answers": answers,
@@ -49,12 +55,10 @@ def generate_fake_question_data():
             "difficulty": difficulty,
             "required_rank": required_rank,  
             "language": random.randint(1, 2),
-            "multimedia": video_id
+            "multimedia": random.choice(video_ids)
         }
         fake_questions.append(fake_question)
     return fake_questions
-
-
 
 # Insert fake question data into MongoDB
 def insert_fake_question_data():

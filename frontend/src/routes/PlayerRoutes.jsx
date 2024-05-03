@@ -6,7 +6,7 @@ import Player from "../components/player/Player";
 const PlayerRoutes = () => {
   return (
     <Routes>
-      <Route path="/player" element={<Player />} />
+      <Route path="/player/:id" element={<Player />} />
     </Routes>
   );
 };

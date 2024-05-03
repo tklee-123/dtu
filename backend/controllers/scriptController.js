@@ -1,74 +1,39 @@
-const FunctionModel = require("../models/function");
-const PlayerModel = require("../models/player");
-const QuestionModel = require("../models/question");
-const Player = require("../models/player");
-const Question = require("../models/question");
-const AnsweredQuestionModel = require("../models/answered_question");
-const GroupQuestionModel = require("../models/group_question");
-const mongoose = require("../connect/connect");
 const FileModel = require("../models/fsfile");
 const { GridFSBucket } = require('mongodb');
+const { MongoClient } = require('mongodb');
 const { exec } = require("child_process");
+const { ObjectId } = require('mongodb');
+const { stdout } = require("process");
+const QuestionModel = require("../models/question")
+const mongoose = require("../connect/connect")
+const AnsweredQuestionModel = require("../models/answered_question");
+const { pipeline } = require("stream");
+const Result = require("../models/result");
+const Player = require("../models/player");
+async function connectToMongoDB() {
+    const uri = "mongodb+srv://admin:admin123@cluster0.jmil5cr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
+        console.log("Connected to MongoDB");
 
+        // Return the connected client
+        return client;
+    } catch (e) {
+        console.error("Error connecting to MongoDB:", e);
+        throw e; // Throw error for handling in calling code
+    }
+}
 const script = {
-    createQuestionPool: async (req, res) => {
-        try {
-            const playerId = req.body._id;
-            const functionDoc = await FunctionModel.findOne({ _id: 'filterQuestionsByPreferences' });
-            if (!functionDoc) {
-                console.log('Function not found.');
-                return res.status(404).json({ error: 'Function not found.' });
-            }
-            const filterQuestionsByPreferencesFn = eval('(' + functionDoc.value + ')');
-            const result = await filterQuestionsByPreferencesFn(playerId);
-            await GroupQuestionModel.create({
-                player_major: playerId,
-                player_level: result.playerLevel,
-                questions: result.questions
-            });
-            return res.status(200).json({ message: 'Question pool created successfully.' });
-        } catch (error) {
-            console.error('Error creating question pool:', error);
-            return res.status(500).json({ error: 'Internal server error.' });
-        }
-    },
-
-    get_player_major_level: async (req, res) => {
-        try {
-            const playerId = req.body._id;
-            const functionDoc = await FunctionModel.findOne({ _id: 'getUserPreferences' });
-            if (!functionDoc) {
-                console.log('Function not found.');
-                return res.status(404).json({ error: 'Function not found.' });
-            }
-            const getUserPreferencesFn = eval('(' + functionDoc.value + ')');
-            const result = await getUserPreferencesFn(playerId);
-            return res.status(200).json({
-                player_major: result.major,
-                player_level: result.level,
-                playerId: playerId
-            });
-        } catch (error) {
-            console.error('Error getting player major level:', error);
-            return res.status(500).json({ error: 'Internal server error.' });
-        }
-    },
-
     getQuestionInfo: async (req, res) => {
         try {
-            const questionId = req.body.id;
-            const functionDoc = await FunctionModel.findOne({ _id: 'getQuestionInfo' });
-            if (!functionDoc) {
-                console.log('Function not found.');
-                return res.status(404).json({ error: 'Function not found.' });
-            }
-            const getQuestionInfo = eval('(' + functionDoc.value + ')');
-            const result = await getQuestionInfo(questionId);
+            const questionId = new ObjectId(req.body.id);
+            const result = await QuestionModel.findOne({_id: questionId})
             return res.status(200).json({
                 content: result.content,
                 answers: result.answers,
-                correct_answer: result.correct_answer,
-                multimedia: result.multimedia
+                correct_answer: result.correct_answer
             });
         } catch (error) {
             console.error('Error getting question info:', error);
@@ -76,40 +41,21 @@ const script = {
         }
     },
 
-    deleteOldQuestions: async (req, res) => {
+    getAnsweredQuestion: async (req, res) => {
         try {
-            const playerId = req.body._id;
-            const playerQuestions = await AnsweredQuestionModel.findOne({ playerId });
-            if (playerQuestions) {
-                if (playerQuestions.questions.length > 100) {
-                    playerQuestions.questions = playerQuestions.questions.slice(-100);
-                    await playerQuestions.save();
-                    console.log("Old data has been successfully deleted.");
-                } else {
-                    console.log("No need to delete data.");
-                }
-            } else {
-                console.log("Player information not found.");
-            }
-            return res.status(200).json({ message: 'Old questions deleted successfully.' });
-        } catch (error) {
-            console.error("Error deleting old questions:", error);
-            return res.status(500).json({ error: 'Internal server error.' });
-        }
-    },
-    getAnsweredQuestion: async(req, res) => {
-        try {
-            const playerId = req.body.playerId;
-            const playerInfo = await AnsweredQuestionModel.findOne({ playerId: playerId });
+            const playerId = new ObjectId(req.body.id);
+            const playerInfo = await AnsweredQuestionModel.findOne({ 'player._id': playerId });
             if (!playerInfo) {
                 return res.status(404).json({ error: 'Player information not found.' });
             }
-            return res.status(200).json({ playerInfo });
+            const questionIds = playerInfo.questions.map(question => question._id);
+            return res.status(200).json({ questionIds });
         } catch (error) {
             console.error('Error retrieving player information:', error);
             return res.status(500).json({ error: 'Internal server error.' });
         }
     },
+      
     openVideo: async (req, res) => {
         try {
             const questionId = req.body.question_id;
@@ -120,13 +66,11 @@ const script = {
             if (!question.multimedia) {
                 return res.status(404).json({ error: 'Video not found for this question.' });
             }
-    
             const videoObjectId = question.multimedia;
             const file = await FileModel.findOne({ _id: videoObjectId });
             if (!file) {
                 return res.status(404).json({ error: 'Video file not found.' });
             }
-    
             const videoFileName = file.filename;
             const db = mongoose.connection;
             const bucket = new GridFSBucket(db.db);
@@ -143,16 +87,16 @@ const script = {
             return res.status(500).json({ error: 'Internal Server Error' });
         }
     },
-    runAlgorithm: async (req, res) => {
+    run: async (req, res) => {
         try {
-            const playerId = req.account._id.toString();
-            exec(`python ./codePython/algorithms/get_recommended_questions.py ${playerId}`, (error, stdout, stderr) => {
+            exec(`python D:/dtu/backend/DTU_demo_algo/generate_request.py`, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`Error executing the Python script: ${error}`);
                     return res.status(500).send("Internal Server Error");
                 }
-                res.send(stdout);
+                res.send("Players have already been recommended");
             });
+           
         } catch (error) {
             console.error('Error running algorithm:', error);
             return res.status(500).json({ error: 'Internal server error.' });
@@ -171,7 +115,97 @@ const script = {
             console.error('Error running algorithm:', error);
             return res.status(500).json({ error: 'Internal server error.' });
         }
+    },
+    get_id: async (req, res) => {
+        try {
+            const number = req.body.number;
+    
+            const players = await Result.find({}, { _id: 1 });
+            if (number < 0 || number >= players.length) {
+                return res.status(400).json({ error: 'Invalid player number.' });
+            }
+            const playerId = players[number]._id;
+            res.status(200).json({ player_id: playerId });
+        } catch (error) {
+            console.error('Error:', error);
+            return res.status(500).json({ error: 'Internal server error.' });
+        }
+    },
+    
+    get_recommended_question: async (req, res) => {
+        try {
+            console.log(req.params.id)
+            const player_id = new ObjectId(req.params.id);
+            const player = await Player.findOne({ "_id": player_id });
+            const result = await Result.findOne({ '_id': player_id });
+            console.log(player)
+            const majority = player.major;
+    
+            if (!result) {
+                return res.status(404).json({ error: 'Result not found for the player.' });
+            }
+    
+            const questions = result.recommended_questions;
+            const questionDetails = [];
+    
+            for (const questionId of questions) {
+                const question = await QuestionModel.findById(questionId); 
+                console.log(question)
+                if (question) {
+                    questionDetails.push({
+                        "category": question.category,
+                        "subcategory": question.subcategory,
+                        "difficulty": question.difficulty,
+                        "required_rank": question.required_rank
+                    });
+                }
+            }
+    
+            res.status(200).json({
+                "recommended_questions": questionDetails
+            });
+        } catch (error) {
+            console.error('Error:', error);
+            return res.status(500).json({ error: 'Internal server error.' });
+        }
+    },
+    get_nearest_player: async(req, res) => {
+        try {
+            const player_id =  new ObjectId(req.body.player_id);
+            const result = await Result.findOne({"_id": player_id})
+            if (!result) {
+                return res.status(404).json({ error: 'Result not found for the player.' });
+            }
+            const nearest_player = result.nearest_player;
+            res.status(200).json(nearest_player); 
+        } catch (error) {
+            console.error('Error:', error);
+            return res.status(500).json({ error: 'Internal server error.' });
+        }
+       
+    },
+    get_infor: async(req, res) => {
+        try {
+            const player_id =  new ObjectId(req.params.id);
+            const player = await Player.findOne({"_id": player_id})
+            if (!player) {
+                return res.status(404).json({ error: 'Player not found' });
+            }
+            res.status(200).json(player); 
+        } catch (error) {
+            console.error('Error:', error);
+            return res.status(500).json({ error: 'Internal server error.' });
+        }
     }
+    
+
+    // process_loop: async(req, res) => {
+    //     const rqs = req.body.rqs;
+    //     const client = await connectToMongoDB();
+    //     const playersCollection = client.db("dtu").collection("players");
+    //     const players = 
+    // }
+    
 };
 
 module.exports = script;

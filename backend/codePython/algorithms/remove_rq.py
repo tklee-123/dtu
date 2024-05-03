@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 
 def disable_indexes(collection):
-    # Store the state of each index before disabling
     index_states = {}
     for index in collection.list_indexes():
         index_name = index["name"]
@@ -12,17 +11,16 @@ def disable_indexes(collection):
     return index_states
 
 def enable_indexes(collection, index_states):
-    # Re-enable indexes based on their previous state
     for index_name, state in index_states.items():
         collection.index_information()[index_name]["background"] = state
 
 def remove_recommended_question(collection):
-    collection.update_many({}, {"$unset": {"recommended_question": ""}})
+    collection.update_many({}, {"$unset": {"recommended_questions": ""}})
 
 def main():
-    client = MongoClient('mongodb://localhost:27017')
+    client = MongoClient('mongodb+srv://root:Vly.19952003@cluster0.jmil5cr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
     db = client['dtu']  
-    player_collection = db['players']
+    player_collection = db['results']
     index_states = disable_indexes(player_collection)
     remove_recommended_question(player_collection)
     enable_indexes(player_collection, index_states)  

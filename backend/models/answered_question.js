@@ -1,7 +1,10 @@
 const mongoose = require("../connect/connect");
 const Schema = mongoose.Schema;
 const answeredQuestionSchema = mongoose.Schema({
-    playerId: { type: mongoose.Schema.Types.ObjectId}, // Id của người chơi
+    player: { 
+        _id: {type: Schema.Types.ObjectId},
+        degree: {type: Number}
+    },
     questions: [{
         _id: {type: Schema.Types.ObjectId},
         timestamp: { type: Date }, // Thời gian bắt đầu đưa ra câu hỏi

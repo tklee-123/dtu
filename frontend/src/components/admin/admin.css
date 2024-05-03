@@ -6,7 +6,6 @@ body {
   }
   
   .wrapper {
-    background-image: url("D:/dtu/frontend/public/images/bg.png"); 
     background-size: cover;
     background-position: center;
     padding: 20px;

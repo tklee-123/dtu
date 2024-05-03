@@ -6,16 +6,13 @@ import numpy as np
 
 # Connect to MongoDB
 client = MongoClient('mongodb+srv://root:Vly.19952003@cluster0.jmil5cr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+# client = MongoClient('mongodb://localhost:27017')
 db = client['dtu']  # Choose your database
 player_collection = db['players']  # Choose your collection
 question_collection = db['questions']  # Collection chứa các câu hỏi
 
-# Initialize Faker
 fake = Faker('vi_VN')
-
-# Lấy danh sách các lĩnh vực của các câu hỏi
 question_categories = question_collection.distinct("category")
-
 # Hàm sinh dữ liệu giả mạo cho người chơi
 def generate_fake_player_data():
     fake_players = []
@@ -34,14 +31,9 @@ def generate_fake_player_data():
         
         fake_player = {
             "major": random.sample(question_categories, 4),
-            "birth_year": 2024 - age,  # Tính năm sinh dựa trên tuổi
-            "occupation": fake.job(),
+            "birth_year": 2024 - age,  
             "full_name": fake.name(),
             "email": fake.email(),
-            "level": random.randint(1, 10),
-            "current_assessment_score": random.randint(0, 100),
-            "correct_ratio": random.randint(0, 100),
-            "played_round_count": random.randint(1, 100),
             "degree": degree  
         }
         fake_players.append(fake_player)

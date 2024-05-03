@@ -1,66 +1,65 @@
-import "./admin.css";
 import React, { useState } from "react";
-import axios from "axios";
 import scriptAPI from "../../api/script";
-import { useUser } from "../../context/UserContext";
+import "./admin.css"; // Import CSS file for Admin component
 
-const AdminPage = () => {
-  const [playerId, setPlayerId] = useState("");
-  const { userInfo } = useUser();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [algorithmResult, setAlgorithmResult] = useState("");
+const Admin = () => {
+    const [inputValue, setInputValue] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [response, setResponse] = useState(""); // Thêm state để lưu trữ kết quả API
 
-  const handleInsertData = async () => {
-    try {
-        setLoading(true);
-        if (!userInfo || !userInfo.accessToken) {
-            throw new Error("User information or access token is missing.");
+    const handleInputChange = (event) => {
+        setInputValue(event.target.value);
+    };
+
+    const handleExecuteButtonClick = async () => {
+        try {
+            setLoading(true);
+            const response = await scriptAPI.get_nearest_player(inputValue);
+            setResponse(response); 
+            setError(""); 
+        } catch (error) {
+            setError("Failed to execute script: " + error.message);
+        } finally {
+            setLoading(false);
         }
-        const response = await scriptAPI.get_major(userInfo.accessToken);
-        setAlgorithmResult(response);
-    } catch (error) {
-        setError("Failed to run script: " + error.message);
-    } finally {
-        setLoading(false);
-    }
-  };
+    };
 
-  const handleGetRecommendedQuestion = async () => {
-    try {
-      const response = await scriptAPI.get_major(playerId);
-      setAlgorithmResult(response.data); 
-    } catch (error) {
-      console.error("Error getting recommended question:", error);
-    }
-  };
-
-  return (
-    <div>
-      <h1>Admin Page</h1>
-      <div>
-        <button onClick={handleInsertData}>Run Algorithm</button>
-      </div>
-      <div>
-        <input
-          type="text"
-          placeholder="Player ID"
-          value={playerId}
-          onChange={(e) => setPlayerId(e.target.value)}
-        />
-        <button onClick={handleGetRecommendedQuestion}>Get Recommended Question</button>
-      </div>
-      <div>
-        {/* Hiển thị thông tin kết quả thuật toán */}
-        {algorithmResult && (
-          <div>
-            <h3>Recommended Question:</h3>
-            <p>{algorithmResult}</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+    return (
+        <div className="admin-wrapper">
+            <div className="admin-container">
+                <div className="admin-content">
+                    <div className="input-container">
+                        <label htmlFor="inputField">Input:</label>
+                        <input
+                            type="text"
+                            id="inputField"
+                            value={inputValue}
+                            onChange={handleInputChange}
+                            className="input-field"
+                        />
+                    </div>
+                    <div className="button-container">
+                        <button
+                            onClick={handleExecuteButtonClick}
+                            disabled={loading}
+                            className="execute-button"
+                        >
+                            {loading ? "Executing..." : "Execute"}
+                        </button>
+                    </div>
+                    {error && <div className="admin-error">{error}</div>}
+                    {/* Hiển thị kết quả của API */}
+                    {response && (
+                        <div className="api-response-container">
+                            <h3>Nearest Players</h3>
+                            <div>{response}</div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 };
 
-export default AdminPage;
+export default Admin;

@@ -5,7 +5,6 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    background-image: url("D:/dtu/frontend/public/images/bg.png");
     color: #fff;
     background-color: rgba(255, 255, 255, 0.8); /* Màu trắng với độ mờ 80% */
     padding: 20px;
@@ -37,7 +36,22 @@
     margin-right: 10px;
     transition: background-color 0.3s;
   }
+  .check-result-button {
+    padding: 5px 10px;
+    color: #ff9d00;
+    border: none;
+    cursor: pointer;
+    font-size: 12px; /* Kích thước font nhỏ hơn */
+    position: fixed;
+    bottom: 20px; /* Khoảng cách từ dưới cùng của trình duyệt */
+    right: 20px; /* Khoảng cách từ phải của trình duyệt */
+    z-index: 999; /* Đảm bảo nút hiển thị trên các phần tử khác */
+    border-radius: 5px; /* Bo góc */
+  }
   
+  .check-result-button:hover {
+    background-color: #0056b3;
+  }
   .button-wrapper a:hover {
     background-color: #b34200;
   }

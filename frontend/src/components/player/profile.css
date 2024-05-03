@@ -1,0 +1,26 @@
+/* profile.css */
+
+.container {
+  display: flex;
+  position: relative;
+  border: none; /* Loại bỏ viền cho .container */
+}
+  
+.profile-info {
+  margin-top: 20px;
+}
+  
+.profile-heading {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: #ffae00;
+}
+  
+.profile-details {
+  margin-top: 10px;
+}
+  
+.profile-details p {
+  margin-bottom: 8px;
+}

@@ -10,12 +10,13 @@ const questionSchema = new mongoose.Schema({
         type: String // 4 câu trả lời
     }],
     correct_answer: {type: String}, //câu trả lời đúng
-    difficulty_level: {
+    difficulty: {
         type: Number // độ khó dễ
     },
+    required_rank: {type: Number},
     language: {type: Number}, // ngôn ngữ 
     multimedia: {type: String}
 })
 questionSchema.index({ 'category': 1, 'difficulty': 1});
-const Question = mongoose.model("Question", questionSchema)
+const Question = mongoose.model("Question", questionSchema, "questions")
 module.exports = Question
