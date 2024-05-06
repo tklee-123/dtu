@@ -34,7 +34,8 @@ def generate_fake_player_data():
             "birth_year": 2024 - age,  
             "full_name": fake.name(),
             "email": fake.email(),
-            "degree": degree  
+            "degree": degree,
+            "rank": random.choice([1,2,3,4,5,6,7,8,9,10])
         }
         fake_players.append(fake_player)
     return fake_players
